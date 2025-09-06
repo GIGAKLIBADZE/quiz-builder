@@ -3,7 +3,7 @@ import { exampleQuizzes, STORAGE_KEY } from "./constants";
 
 export function safeParse<T>(data: string | null, fallback: T): T {
     try {
-        return data && JSON.parse(data);
+        return data ? (JSON.parse(data) as T) : fallback;
     } catch {
         return fallback;
     }
@@ -11,34 +11,49 @@ export function safeParse<T>(data: string | null, fallback: T): T {
 
 export function getQuizzes(): Quiz[] {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return safeParse(raw, []);
+    return safeParse<Quiz[]>(raw, []);
 }
 
-export function getQuiz(id: string) {
+export function getQuiz(id?: string): Quiz | undefined {
+    if (!id) return undefined;
     return getQuizzes().find((quiz) => quiz.id === id);
 }
 
 export function saveQuiz(quiz: Quiz) {
-    const quizzes = getQuizzes();
-    const quizIndex = quizzes.findIndex((q) => q.id = quiz.id);
+    try {  
+      const quizzes = getQuizzes();
+      const quizIndex = quizzes.findIndex((q) => q.id === quiz.id);
 
-    if (quizIndex > 0) {
+      if (quizIndex > 0) {
         quizzes[quizIndex] = quiz;
-    } else {
+      } else {
         quizzes.push(quiz);
-    }
+      }
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(quizzes));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(quizzes));
+    } catch (err) {
+        console.error("Failed to save the quiz..", err);
+        alert("Failed to save the quiz.");
+    }
 }
 
 export function deleteQuiz(id: string) {
-    const quizzes = getQuizzes().filter((quiz) => quiz.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(quizzes));
+    try {
+      const quizzes = getQuizzes().filter((quiz) => quiz.id !== id);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(quizzes));
+    } catch (err) {
+      console.error("Failed to delete quiz", err);
+    }
 }
 
 export function seedQuizzes() {
     const initialized = localStorage.getItem(STORAGE_KEY + ".init");
     if (initialized) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(exampleQuizzes));
-    localStorage.setItem(STORAGE_KEY + ".init", "true");
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(exampleQuizzes));
+      localStorage.setItem(STORAGE_KEY + ".init", "true");
+    } catch (err) {
+      console.error("Failed to seed those quizzes", err);
+    }
 }

@@ -1,20 +1,37 @@
 "use client";
 
-import Link from "next/link";
 import { useQuizzes } from "@/hooks/useQuizzes";
+import { useRouter } from "next/navigation";
+import { saveQuiz } from "@/storage/quizzes";
+import { Quiz } from "@/storage/types";
 
 export default function QuizListPage() {
   const quizzes = useQuizzes();
+  const router = useRouter();
+
+  const handleCreate = () => {
+    const newQuiz: Quiz = {
+      id: crypto.randomUUID(),
+      title: "Untitled Quiz",
+      blocks: [],
+      published: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    saveQuiz(newQuiz);
+    router.push(`/quiz/edit/${newQuiz.id}`);
+  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Quizzes</h1>
 
-      <Link href="/quiz/edit">
-        <button className="mb-4 px-4 py-2 bg-blue-500 text-white rounded">
-          Create a quiz
-        </button>
-      </Link>
+      <button
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+        onClick={handleCreate}
+      >
+        Create a quiz
+      </button>
 
       <table className="w-full border-collapse">
         <thead>
@@ -33,16 +50,19 @@ export default function QuizListPage() {
                   {new Date(quiz.updatedAt).toLocaleString()}
                 </td>
                 <td className="py-2 space-x-2">
-                  <Link href={`/quiz/edit/${quiz.id}`}>
-                    <button className="px-2 py-1 bg-yellow-400 text-white rounded">
-                      Edit
-                    </button>
-                  </Link>
-                  <Link href={`/quiz/${quiz.id}`}>
-                    <button className="px-2 py-1 bg-green-500 text-white rounded">
-                      View
-                    </button>
-                  </Link>
+                  <button
+                    className="px-2 py-1 bg-yellow-400 text-white rounded"
+                    onClick={() => router.push(`/quiz/edit/${quiz.id}`)}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    className="px-2 py-1 bg-green-500 text-white rounded"
+                    onClick={() => router.push(`/quiz/${quiz.id}`)}
+                  >
+                    View
+                  </button>
                 </td>
               </tr>
             ))

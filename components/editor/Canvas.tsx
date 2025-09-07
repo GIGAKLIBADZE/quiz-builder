@@ -2,40 +2,79 @@
 
 import { FC } from "react";
 import { QuizBlock } from "@/storage/types";
+import {
+  DndContext,
+  closestCenter,
+  DragEndEvent,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  KeyboardSensor,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
+import { BlockCard } from "./BlockCard";
 
 interface ICanvasProps {
   blocks: QuizBlock[];
   selectedBlockId: string | null;
   onSelectBlock: (id: string) => void;
+  onReorder: (activeId: string, overId: string) => void; // new
+  onDeleteBlock: (id: string) => void; // new
 }
 
 export const Canvas: FC<ICanvasProps> = ({
   blocks,
   selectedBlockId,
   onSelectBlock,
+  onReorder,
+  onDeleteBlock,
 }) => {
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over) return;
+    if (active.id !== over.id) {
+      onReorder(String(active.id), String(over.id));
+    }
+  };
+
   return (
-    <main className="flex-1 bg-white p-4 overflow-auto">
+    <main className="flex-1 bg-slate-50 p-6 overflow-auto">
       {blocks.length === 0 ? (
         <p className="text-gray-400">
           Drag a block from the left to start building your quiz.
         </p>
       ) : (
-        <div className="space-y-4">
-          {blocks.map((block) => (
-            <div
-              key={block.id}
-              onClick={() => onSelectBlock(block.id)}
-              className={`p-3 border rounded cursor-pointer transition ${
-                block.id === selectedBlockId
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-300"
-              }`}
-            >
-              {block.type.toUpperCase()} - {JSON.stringify(block.props)}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={blocks.map((b) => b.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-3">
+              {blocks.map((block) => (
+                <BlockCard
+                  key={block.id}
+                  block={block}
+                  selected={block.id === selectedBlockId}
+                  onSelect={onSelectBlock}
+                  onDelete={onDeleteBlock}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
       )}
     </main>
   );

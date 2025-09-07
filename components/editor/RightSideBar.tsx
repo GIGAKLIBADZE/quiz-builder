@@ -15,7 +15,7 @@ export const SidebarRight: FC<ISidebarRightProps> = ({
   if (!block) {
     return (
       <aside className="w-1/4 bg-gray-50 border-l p-4">
-        <p className="text-gray-500">Select a block to edit its properties</p>
+        <p className="text -gray-500">Select a block to edit its properties</p>
       </aside>
     );
   }
@@ -35,7 +35,7 @@ export const SidebarRight: FC<ISidebarRightProps> = ({
   };
 
   return (
-    <aside className="w-1/4 bg-gray-50 border-l p-4">
+    <aside className="w-1/4 bg-white border-l p-4">
       <h2 className="font-bold mb-4">Properties</h2>
 
       {block.type === "header" ||

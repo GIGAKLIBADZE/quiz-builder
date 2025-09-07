@@ -11,7 +11,18 @@ export function safeParse<T>(data: string | null, fallback: T): T {
 
 export function getQuizzes(): Quiz[] {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return safeParse<Quiz[]>(raw, []);
+    const arr = safeParse<Quiz[]>(raw, []);
+    const byId = new Map<string, Quiz>();
+    for (const q of arr) {
+      const id = q.id || crypto.randomUUID();
+      const withId: Quiz = { ...q, id };
+      const prev = byId.get(id);
+    if (!prev || new Date(withId.updatedAt) > new Date(prev.updatedAt)) {
+      byId.set(id, withId);
+    }
+  }
+  return Array.from(byId.values());
+
 }
 
 export function getQuiz(id?: string): Quiz | undefined {
@@ -24,7 +35,7 @@ export function saveQuiz(quiz: Quiz) {
       const quizzes = getQuizzes();
       const quizIndex = quizzes.findIndex((q) => q.id === quiz.id);
 
-      if (quizIndex > 0) {
+      if (quizIndex >= 0) {
         quizzes[quizIndex] = quiz;
       } else {
         quizzes.push(quiz);

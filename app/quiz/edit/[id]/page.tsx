@@ -9,6 +9,7 @@ import { Canvas } from "@/components/editor/Canvas";
 import { SidebarRight } from "@/components/editor/RightSideBar";
 import { getQuiz, saveQuiz } from "@/storage/quizzes";
 import { Quiz, QuizBlock } from "@/storage/types";
+import { arrayMove } from "@dnd-kit/sortable";
 
 export default function EditQuizPage() {
   const router = useRouter();
@@ -43,7 +44,11 @@ export default function EditQuizPage() {
           ? { question: "New Question?", options: [], type: "single" }
           : { text: "Button" },
     };
-    setQuiz({ ...quiz, blocks: [...quiz.blocks, newBlock] });
+    setQuiz({
+      ...quiz,
+      blocks: [...quiz.blocks, newBlock],
+      updatedAt: new Date().toISOString(),
+    });
   };
 
   const updateBlock = (updatedBlock: QuizBlock) => {
@@ -52,6 +57,7 @@ export default function EditQuizPage() {
       blocks: quiz.blocks.map((b) =>
         b.id === updatedBlock.id ? updatedBlock : b
       ),
+      updatedAt: new Date().toISOString(),
     });
   };
 
@@ -74,6 +80,28 @@ export default function EditQuizPage() {
   const selectedBlock =
     quiz.blocks.find((b) => b.id === selectedBlockId) || null;
 
+  const onReorder = (activeId: string, overId: string) => {
+    if (!quiz || activeId === overId) return;
+    const oldIndex = quiz.blocks.findIndex((b) => b.id === activeId);
+    const newIndex = quiz.blocks.findIndex((b) => b.id === overId);
+    if (oldIndex < 0 || newIndex < 0) return;
+    setQuiz({
+      ...quiz,
+      blocks: arrayMove(quiz.blocks, oldIndex, newIndex),
+      updatedAt: new Date().toISOString(),
+    });
+  };
+
+  const onDeleteBlock = (id: string) => {
+    if (!quiz) return;
+    setQuiz({
+      ...quiz,
+      blocks: quiz.blocks.filter((b) => b.id !== id),
+      updatedAt: new Date().toISOString(),
+    });
+    if (selectedBlockId === id) setSelectedBlockId(null);
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <Header
@@ -90,6 +118,8 @@ export default function EditQuizPage() {
           blocks={quiz.blocks}
           selectedBlockId={selectedBlockId}
           onSelectBlock={setSelectedBlockId}
+          onReorder={onReorder}
+          onDeleteBlock={onDeleteBlock}
         />
         <SidebarRight block={selectedBlock} onUpdateBlock={updateBlock} />
       </div>

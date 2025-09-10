@@ -10,6 +10,7 @@ import { SidebarRight } from "@/components/editor/RightSideBar";
 import { getQuiz, saveQuiz } from "@/storage/quizzes";
 import { Quiz, QuizBlock } from "@/storage/types";
 import { arrayMove } from "@dnd-kit/sortable";
+import { Loading } from "./components/Loading";
 
 export default function EditQuizPage() {
   const router = useRouter();
@@ -31,19 +32,36 @@ export default function EditQuizPage() {
     setQuiz(existingQuiz);
   }, [id]);
 
-  if (!quiz) return <p>Loading...</p>;
+  if (!quiz) return <Loading />;
 
   const addBlock = (type: QuizBlock["type"]) => {
     const newBlock: QuizBlock = {
       id: crypto.randomUUID(),
       type,
-      props:
-        type === "header" || type === "footer"
-          ? { text: type === "header" ? "New Heading" : "Footer text" }
-          : type === "question"
-          ? { question: "New Question?", options: [], type: "single" }
-          : { text: "Button" },
+      props: {},
     };
+
+    switch (type) {
+      case "header":
+        newBlock.props = { text: "New Heading" };
+        break;
+      case "footer":
+        newBlock.props = { text: "Footer text" };
+        break;
+      case "question":
+        newBlock.props = {
+          question: "New Question?",
+          options: [],
+          type: "single",
+        };
+        break;
+      case "button":
+        newBlock.props = { text: "Button" };
+        break;
+      default:
+        newBlock.props = {};
+    }
+
     setQuiz({
       ...quiz,
       blocks: [...quiz.blocks, newBlock],
@@ -102,11 +120,13 @@ export default function EditQuizPage() {
     if (selectedBlockId === id) setSelectedBlockId(null);
   };
 
+  const onTitleChange = (title: string) => setQuiz({ ...quiz, title });
+
   return (
     <div className="flex flex-col h-screen">
       <Header
         title={quiz.title}
-        onTitleChange={(title) => setQuiz({ ...quiz, title })}
+        onTitleChange={onTitleChange}
         onSave={handleSave}
         onPublish={handlePublish}
         isPublished={quiz.published}

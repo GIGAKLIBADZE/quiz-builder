@@ -6,20 +6,20 @@ import { Footer } from "./components/Footer";
 import { Question } from "./components/Question";
 import { Button } from "./components/Button";
 
-import { QuizBlock } from "@/storage/types";
+import { TQuizBlock, BlockTypeEnum } from "@/storage/types";
 
 interface IBlockRendererProps {
-  block: QuizBlock;
+  block: TQuizBlock;
 }
 
 export const BlockRenderer: FC<IBlockRendererProps> = ({ block }) => {
   switch (block.type) {
-    case "header": {
+    case BlockTypeEnum.HEADER: {
       const text = String(block.props?.text ?? "");
       return <Header key={block.id} id={block.id} text={text} />;
     }
 
-    case "question": {
+    case BlockTypeEnum.QUESTION: {
       const qType =
         (block.props?.type as "single" | "multi" | "text") ?? "single";
       const question = String(block.props?.question ?? "");
@@ -37,12 +37,12 @@ export const BlockRenderer: FC<IBlockRendererProps> = ({ block }) => {
       );
     }
 
-    case "button": {
+    case BlockTypeEnum.BUTTON: {
       const text = String(block.props?.text ?? "Next");
       return <Button id={block.id} text={text} />;
     }
 
-    case "footer": {
+    case BlockTypeEnum.FOOTER: {
       const text = String(block.props?.text ?? "");
       return <Footer id={block.id} text={text} />;
     }

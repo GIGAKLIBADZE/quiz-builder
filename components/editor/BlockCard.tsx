@@ -3,10 +3,10 @@
 import { FC, CSSProperties } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { QuizBlock } from "@/storage/types";
+import { TQuizBlock, BlockTypeEnum } from "@/storage/types";
 
 interface IBlockCardProps {
-  block: QuizBlock;
+  block: TQuizBlock;
   selected: boolean;
   onSelect: (id: string) => void;
   onDelete: (id: string) => void;
@@ -18,11 +18,20 @@ export const BlockCard: FC<IBlockCardProps> = ({
   onSelect,
   onDelete,
 }) => {
-  const subtitle = ["header", "footer", "button"].includes(block.type)
-    ? String(block.props?.text ?? "")
-    : block.type === "question"
-    ? String(block.props?.question ?? "")
-    : "";
+  const getBlockSubtitle = (block: TQuizBlock): string => {
+    switch (block.type) {
+      case BlockTypeEnum.HEADER:
+      case BlockTypeEnum.FOOTER:
+      case BlockTypeEnum.BUTTON:
+        return String(block.props?.text ?? "");
+      case BlockTypeEnum.QUESTION:
+        return String(block.props?.question ?? "");
+      default:
+        return "";
+    }
+  };
+
+  const subtitle: string = getBlockSubtitle(block);
 
   const {
     attributes,
@@ -62,17 +71,6 @@ export const BlockCard: FC<IBlockCardProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         ↕
-      </button>
-
-      <button
-        className="px-2 py-1 text-xs border rounded hover:bg-red-50 text-red-600"
-        title="Delete"
-        onClick={(e) => {
-          e.stopPropagation();
-          onDelete(block.id);
-        }}
-      >
-        ✕
       </button>
     </div>
   );

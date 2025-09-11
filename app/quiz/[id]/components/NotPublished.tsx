@@ -1,10 +1,10 @@
 "use client";
 
 import { FC } from "react";
-import { Quiz } from "@/storage/types";
+import { TQuiz } from "@/storage/types";
 
 interface INotPublishedProps {
-  quiz: Quiz | null;
+  quiz: TQuiz | null;
 }
 
 export const NotPublished: FC<INotPublishedProps> = ({ quiz }) => (

@@ -1,7 +1,7 @@
 "use client";
 
 import { FC } from "react";
-import { QuizBlock } from "@/storage/types";
+import { TQuizBlock } from "@/storage/types";
 import {
   DndContext,
   closestCenter,
@@ -19,11 +19,11 @@ import {
 import { BlockCard } from "./BlockCard";
 
 interface ICanvasProps {
-  blocks: QuizBlock[];
+  blocks: TQuizBlock[];
   selectedBlockId: string | null;
   onSelectBlock: (id: string) => void;
-  onReorder: (activeId: string, overId: string) => void; // new
-  onDeleteBlock: (id: string) => void; // new
+  onReorder: (activeId: string, overId: string) => void;
+  onDeleteBlock: (id: string) => void;
 }
 
 export const Canvas: FC<ICanvasProps> = ({

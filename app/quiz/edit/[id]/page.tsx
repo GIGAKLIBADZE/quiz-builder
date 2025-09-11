@@ -8,7 +8,7 @@ import { SidebarLeft } from "@/components/editor/LeftSideBar";
 import { Canvas } from "@/components/editor/Canvas";
 import { SidebarRight } from "@/components/editor/RightSideBar";
 import { getQuiz, saveQuiz } from "@/storage/quizzes";
-import { Quiz, QuizBlock } from "@/storage/types";
+import { TQuiz, TQuizBlock, BlockTypeEnum } from "@/storage/types";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Loading } from "./components/Loading";
 
@@ -17,7 +17,7 @@ export default function EditQuizPage() {
   const params = useParams<{ id: string }>();
   const id = params?.id;
 
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [quiz, setQuiz] = useState<TQuiz | null>(null);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,32 +34,26 @@ export default function EditQuizPage() {
 
   if (!quiz) return <Loading />;
 
-  const addBlock = (type: QuizBlock["type"]) => {
-    const newBlock: QuizBlock = {
+  const addBlock = (type: TQuizBlock["type"]) => {
+    const newBlock: TQuizBlock = {
       id: crypto.randomUUID(),
       type,
-      props: {},
+      props: getDefaultProps(type),
     };
 
-    switch (type) {
-      case "header":
-        newBlock.props = { text: "New Heading" };
-        break;
-      case "footer":
-        newBlock.props = { text: "Footer text" };
-        break;
-      case "question":
-        newBlock.props = {
-          question: "New Question?",
-          options: [],
-          type: "single",
-        };
-        break;
-      case "button":
-        newBlock.props = { text: "Button" };
-        break;
-      default:
-        newBlock.props = {};
+    function getDefaultProps(type: TQuizBlock["type"]) {
+      switch (type) {
+        case BlockTypeEnum.HEADER:
+          return { text: "New Heading" };
+        case BlockTypeEnum.FOOTER:
+          return { text: "Footer text" };
+        case BlockTypeEnum.QUESTION:
+          return { question: "New Question?", options: [], type: "single" };
+        case BlockTypeEnum.BUTTON:
+          return { text: "Button" };
+        default:
+          return {};
+      }
     }
 
     setQuiz({
@@ -69,7 +63,7 @@ export default function EditQuizPage() {
     });
   };
 
-  const updateBlock = (updatedBlock: QuizBlock) => {
+  const updateBlock = (updatedBlock: TQuizBlock) => {
     setQuiz({
       ...quiz,
       blocks: quiz.blocks.map((b) =>

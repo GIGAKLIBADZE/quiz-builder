@@ -3,14 +3,14 @@
 import { useQuizzes } from "@/hooks/useQuizzes";
 import { useRouter } from "next/navigation";
 import { saveQuiz } from "@/storage/quizzes";
-import { Quiz } from "@/storage/types";
+import { TQuiz } from "@/storage/types";
 
 export default function QuizListPage() {
   const quizzes = useQuizzes();
   const router = useRouter();
 
   const handleCreate = () => {
-    const newQuiz: Quiz = {
+    const newQuiz: TQuiz = {
       id: crypto.randomUUID(),
       title: "Untitled Quiz",
       blocks: [],

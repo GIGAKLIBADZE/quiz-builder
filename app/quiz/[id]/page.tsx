@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getQuiz } from "@/storage/quizzes";
-import { Quiz } from "@/storage/types";
+import { TQuiz } from "@/storage/types";
 import { Loading } from "./components/Loading";
 import { NotPublished } from "./components/NotPublished";
 import { Header } from "./components/BlockRenderer/components/Header";
@@ -17,7 +17,7 @@ export default function QuizRenderPage() {
   const router = useRouter();
   const id = params?.id as string | undefined;
 
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [quiz, setQuiz] = useState<TQuiz | null>(null);
 
   useEffect(() => {
     if (!id) return;

@@ -1,11 +1,13 @@
 "use client";
 
 import { FC } from "react";
-import { QuizBlock } from "@/storage/types";
+import { BlockTypeEnum, TQuizBlock } from "@/storage/types";
+import { SelectTutorial } from "./components/SelectTutorial";
+import { TextInputField } from "./components/TextInputField";
 
 interface ISidebarRightProps {
-  block: QuizBlock | null;
-  onUpdateBlock: (updatedBlock: QuizBlock) => void;
+  block: TQuizBlock | null;
+  onUpdateBlock: (updatedBlock: TQuizBlock) => void;
 }
 
 export const SidebarRight: FC<ISidebarRightProps> = ({
@@ -13,17 +15,13 @@ export const SidebarRight: FC<ISidebarRightProps> = ({
   onUpdateBlock,
 }) => {
   if (!block) {
-    return (
-      <aside className="w-1/4 bg-gray-50 border-l p-4">
-        <p className="text -gray-500">Select a block to edit its properties</p>
-      </aside>
-    );
+    return <SelectTutorial />;
   }
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = (value: string) => {
     onUpdateBlock({
       ...block,
-      props: { ...block.props, text: e.target.value },
+      props: { ...block.props, text: value },
     });
   };
 
@@ -34,22 +32,21 @@ export const SidebarRight: FC<ISidebarRightProps> = ({
     });
   };
 
+  const isSomeVariable =
+    block.type === BlockTypeEnum.HEADER ||
+    block.type === BlockTypeEnum.FOOTER ||
+    block.type === BlockTypeEnum.BUTTON;
+
   return (
     <aside className="w-1/4 bg-white border-l p-4">
       <h2 className="font-bold mb-4">Properties</h2>
 
-      {block.type === "header" ||
-      block.type === "footer" ||
-      block.type === "button" ? (
-        <div className="mb-4">
-          <label className="block font-semibold mb-1">Text</label>
-          <input
-            type="text"
-            value={block.props.text}
-            onChange={handleTextChange}
-            className="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
+      {isSomeVariable ? (
+        <TextInputField
+          label="Text"
+          value={block.props.text}
+          onChange={handleTextChange}
+        />
       ) : null}
 
       {block.type === "question" ? (

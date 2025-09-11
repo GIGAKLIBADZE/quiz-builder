@@ -5,12 +5,12 @@ import { Header } from "@/components/editor/Header";
 import { SidebarLeft } from "@/components/editor/LeftSideBar";
 import { Canvas } from "@/components/editor/Canvas";
 import { SidebarRight } from "@/components/editor/RightSideBar";
-import { Quiz, QuizBlock } from "@/storage/types";
+import { TQuiz, TQuizBlock, BlockTypeEnum } from "@/storage/types";
 import { saveQuiz } from "@/storage/quizzes";
 import { arrayMove } from "@dnd-kit/sortable";
 
 export default function NewQuizPage() {
-  const [quiz, setQuiz] = useState<Quiz>({
+  const [quiz, setQuiz] = useState<TQuiz>({
     id: crypto.randomUUID(),
     title: "Untitled Quiz",
     blocks: [],
@@ -24,14 +24,17 @@ export default function NewQuizPage() {
   const touch = () =>
     setQuiz((q) => ({ ...q, updatedAt: new Date().toISOString() }));
 
-  const addBlock = (type: QuizBlock["type"]) => {
-    const newBlock: QuizBlock = {
+  const addBlock = (type: BlockTypeEnum) => {
+    const newBlock: TQuizBlock = {
       id: crypto.randomUUID(),
       type,
       props:
-        type === "header" || type === "footer"
-          ? { text: type === "header" ? "New Heading" : "Footer text" }
-          : type === "question"
+        type === BlockTypeEnum.HEADER || type === BlockTypeEnum.FOOTER
+          ? {
+              text:
+                type === BlockTypeEnum.HEADER ? "New Heading" : "Footer text",
+            }
+          : type === BlockTypeEnum.QUESTION
           ? { question: "New Question?", options: [], type: "single" }
           : { text: "Button" },
     };
@@ -39,7 +42,7 @@ export default function NewQuizPage() {
     touch();
   };
 
-  const updateBlock = (updatedBlock: QuizBlock) => {
+  const updateBlock = (updatedBlock: TQuizBlock) => {
     setQuiz((q) => ({
       ...q,
       blocks: q.blocks.map((b) =>

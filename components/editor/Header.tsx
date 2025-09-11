@@ -18,6 +18,10 @@ export const Header: FC<IHeaderProps> = ({
   onPublish,
   isPublished,
 }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onTitleChange(e.target.value);
+  };
+
   return (
     <header className="flex items-center justify-between px-6 py-4 border-b shadow-sm bg-white">
       <div className="flex items-center gap-3">
@@ -30,7 +34,7 @@ export const Header: FC<IHeaderProps> = ({
         <input
           className="text-xl font-semibold outline-none border-b border-transparent focus:border-slate-400"
           value={title}
-          onChange={(e) => onTitleChange(e.target.value)}
+          onChange={handleChange}
           placeholder="Untitled Quiz"
         />
       </div>

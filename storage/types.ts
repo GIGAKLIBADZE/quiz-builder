@@ -1,13 +1,20 @@
-export type QuizBlock = {
+export enum BlockTypeEnum {
+  HEADER = "header",
+  FOOTER = "footer",
+  BUTTON = "button",
+  QUESTION = "question",
+}
+
+export type TQuizBlock = {
     id: string
-    type: 'header' | 'question' | 'button' | 'footer'
+    type: BlockTypeEnum
     props: Record<string, any>
 }
 
-export type Quiz = {
+export type TQuiz = {
     id: string
     title: string
-    blocks: QuizBlock[]
+    blocks: TQuizBlock[]
     published: boolean
     createdAt: string
     updatedAt: string

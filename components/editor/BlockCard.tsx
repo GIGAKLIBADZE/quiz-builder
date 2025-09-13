@@ -52,25 +52,39 @@ export const BlockCard: FC<IBlockCardProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm
-                 ${selected ? "ring-2 ring-emerald-400" : ""}`}
+      className={`flex items-center justify-between gap-3   
+                  rounded-2xl border border-slate-300 bg-white p-5 shadow-md 
+                  ${selected ? "ring-2 ring-emerald-400" : ""}`}
       onClick={() => onSelect(block.id)}
     >
       <div className="flex-1">
-        <div className="text-xs uppercase tracking-wide text-gray-500">
+        <div className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
           {block.type}
         </div>
-        <div className="text-sm break-all">{subtitle}</div>
+        <div className="text-base break-words text-gray-800 // larger font + darker text">
+          {subtitle}
+        </div>
       </div>
 
       <button
-        className="px-2 py-1 text-xs border rounded hover:bg-gray-50"
+        {...attributes}
+        {...listeners}
+        className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-100 cursor-move"
         title="Drag to reorder"
         onClick={(e) => e.stopPropagation()}
       >
         ↕
+      </button>
+
+      <button
+        className="px-3 py-2 text-sm border rounded-lg hover:bg-red-100 text-red-600 font-medium"
+        title="Delete"
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(block.id);
+        }}
+      >
+        ✕
       </button>
     </div>
   );

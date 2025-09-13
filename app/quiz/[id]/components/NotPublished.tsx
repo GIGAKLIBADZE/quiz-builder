@@ -1,7 +1,7 @@
 "use client";
 
 import { FC } from "react";
-import { TQuiz } from "@/storage/types";
+import { TQuiz } from "@/models/quiz";
 
 interface INotPublishedProps {
   quiz: TQuiz | null;

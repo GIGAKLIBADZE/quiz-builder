@@ -2,17 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getQuiz } from "@/storage/quizzes";
-import { TQuiz } from "@/storage/types";
+import { useQuizzes } from "@/hooks/useQuizzes";
+import { TQuiz } from "@/models/quiz";
 import { Loading } from "./components/Loading";
 import { NotPublished } from "./components/NotPublished";
-import { Header } from "./components/BlockRenderer/components/Header";
-import { Question } from "./components/BlockRenderer/components/Question";
-import { Button } from "./components/BlockRenderer/components/Button";
-import { Footer } from "./components/BlockRenderer/components/Footer";
 import { BlockRenderer } from "./components/BlockRenderer/BlockRenderer";
 
 export default function QuizRenderPage() {
+  const { getQuiz } = useQuizzes();
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string | undefined;

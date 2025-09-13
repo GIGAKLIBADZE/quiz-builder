@@ -1,7 +1,7 @@
 "use client";
 
 import { FC } from "react";
-import { BlockTypeEnum, TQuizBlock } from "@/storage/types";
+import { BlockTypeEnum, TQuizBlock } from "@/models/quiz";
 import { SelectTutorial } from "./components/SelectTutorial";
 import { TextInputField } from "./components/TextInputField";
 
@@ -19,17 +19,25 @@ export const SidebarRight: FC<ISidebarRightProps> = ({
   }
 
   const handleTextChange = (value: string) => {
-    onUpdateBlock({
-      ...block,
-      props: { ...block.props, text: value },
-    });
+    if (
+      block.type === BlockTypeEnum.HEADER ||
+      block.type === BlockTypeEnum.FOOTER ||
+      block.type === BlockTypeEnum.BUTTON
+    ) {
+      onUpdateBlock({
+        ...block,
+        props: { ...block.props, text: value },
+      });
+    }
   };
 
   const handleQuestionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onUpdateBlock({
-      ...block,
-      props: { ...block.props, question: e.target.value },
-    });
+    if (block.type === BlockTypeEnum.QUESTION) {
+      onUpdateBlock({
+        ...block,
+        props: { ...block.props, question: e.target.value },
+      });
+    }
   };
 
   const isSomeVariable =

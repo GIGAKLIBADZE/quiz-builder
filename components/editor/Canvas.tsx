@@ -1,7 +1,7 @@
 "use client";
 
 import { FC } from "react";
-import { TQuizBlock } from "@/storage/types";
+import { TQuizBlock } from "@/models/quiz";
 import {
   DndContext,
   closestCenter,

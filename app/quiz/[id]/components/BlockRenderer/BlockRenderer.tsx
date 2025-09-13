@@ -6,7 +6,7 @@ import { Footer } from "./components/Footer";
 import { Question } from "./components/Question";
 import { Button } from "./components/Button";
 
-import { TQuizBlock, BlockTypeEnum } from "@/storage/types";
+import { TQuizBlock, BlockTypeEnum } from "@/models/quiz";
 
 interface IBlockRendererProps {
   block: TQuizBlock;
@@ -31,7 +31,7 @@ export const BlockRenderer: FC<IBlockRendererProps> = ({ block }) => {
         <Question
           id={block.id}
           question={question}
-          options={options}
+          options={options.map(String)}
           qType={qType}
         />
       );

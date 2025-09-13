@@ -7,12 +7,13 @@ import { Header } from "@/components/editor/Header";
 import { SidebarLeft } from "@/components/editor/LeftSideBar";
 import { Canvas } from "@/components/editor/Canvas";
 import { SidebarRight } from "@/components/editor/RightSideBar";
-import { getQuiz, saveQuiz } from "@/storage/quizzes";
-import { TQuiz, TQuizBlock, BlockTypeEnum } from "@/storage/types";
+import { TQuiz, TQuizBlock, BlockTypeEnum } from "@/models/quiz";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Loading } from "./components/Loading";
+import { useQuizzes } from "@/hooks/useQuizzes";
 
 export default function EditQuizPage() {
+  const { getQuiz, addOrUpdateQuiz } = useQuizzes();
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const id = params?.id;
@@ -34,31 +35,53 @@ export default function EditQuizPage() {
 
   if (!quiz) return <Loading />;
 
-  const addBlock = (type: TQuizBlock["type"]) => {
-    const newBlock: TQuizBlock = {
-      id: crypto.randomUUID(),
-      type,
-      props: getDefaultProps(type),
-    };
+  const addBlock = (type: BlockTypeEnum) => {
+    let newBlock: TQuizBlock;
 
-    function getDefaultProps(type: TQuizBlock["type"]) {
-      switch (type) {
-        case BlockTypeEnum.HEADER:
-          return { text: "New Heading" };
-        case BlockTypeEnum.FOOTER:
-          return { text: "Footer text" };
-        case BlockTypeEnum.QUESTION:
-          return { question: "New Question?", options: [], type: "single" };
-        case BlockTypeEnum.BUTTON:
-          return { text: "Button" };
-        default:
-          return {};
-      }
+    switch (type) {
+      case BlockTypeEnum.HEADER:
+        newBlock = {
+          id: crypto.randomUUID(),
+          type,
+          props: { text: "New Heading" },
+        };
+        break;
+
+      case BlockTypeEnum.FOOTER:
+        newBlock = {
+          id: crypto.randomUUID(),
+          type,
+          props: { text: "Footer text" },
+        };
+        break;
+
+      case BlockTypeEnum.BUTTON:
+        newBlock = {
+          id: crypto.randomUUID(),
+          type,
+          props: { text: "Button" },
+        };
+        break;
+
+      case BlockTypeEnum.QUESTION:
+        newBlock = {
+          id: crypto.randomUUID(),
+          type,
+          props: {
+            question: "New Question?",
+            options: [],
+            type: "single",
+          },
+        };
+        break;
+
+      default:
+        throw new Error("Unknown block type");
     }
 
     setQuiz({
-      ...quiz,
-      blocks: [...quiz.blocks, newBlock],
+      ...quiz!,
+      blocks: [...quiz!.blocks, newBlock],
       updatedAt: new Date().toISOString(),
     });
   };
@@ -74,21 +97,22 @@ export default function EditQuizPage() {
   };
 
   const handleSave = () => {
-    saveQuiz(quiz);
+    if (!quiz) return;
+    addOrUpdateQuiz(quiz);
     alert("Quiz saved!");
   };
 
   const handlePublish = () => {
+    if (!quiz) return;
     const updatedQuiz = {
       ...quiz,
       published: true,
       updatedAt: new Date().toISOString(),
     };
     setQuiz(updatedQuiz);
-    saveQuiz(updatedQuiz);
+    addOrUpdateQuiz(updatedQuiz);
     alert("Quiz published!");
   };
-
   const selectedBlock =
     quiz.blocks.find((b) => b.id === selectedBlockId) || null;
 

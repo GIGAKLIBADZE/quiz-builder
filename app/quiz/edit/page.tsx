@@ -5,9 +5,9 @@ import { Header } from "@/components/editor/Header";
 import { SidebarLeft } from "@/components/editor/LeftSideBar";
 import { Canvas } from "@/components/editor/Canvas";
 import { SidebarRight } from "@/components/editor/RightSideBar";
-import { TQuiz, TQuizBlock, BlockTypeEnum } from "@/storage/types";
-import { saveQuiz } from "@/storage/quizzes";
+import { TQuiz, TQuizBlock, BlockTypeEnum } from "@/models/quiz";
 import { arrayMove } from "@dnd-kit/sortable";
+import { useQuizzes } from "@/hooks/useQuizzes";
 
 export default function NewQuizPage() {
   const [quiz, setQuiz] = useState<TQuiz>({
@@ -19,25 +19,54 @@ export default function NewQuizPage() {
     updatedAt: new Date().toISOString(),
   });
 
+  const { addOrUpdateQuiz } = useQuizzes();
+
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
 
   const touch = () =>
     setQuiz((q) => ({ ...q, updatedAt: new Date().toISOString() }));
 
-  const addBlock = (type: BlockTypeEnum) => {
-    const newBlock: TQuizBlock = {
-      id: crypto.randomUUID(),
-      type,
-      props:
-        type === BlockTypeEnum.HEADER || type === BlockTypeEnum.FOOTER
-          ? {
-              text:
-                type === BlockTypeEnum.HEADER ? "New Heading" : "Footer text",
-            }
-          : type === BlockTypeEnum.QUESTION
-          ? { question: "New Question?", options: [], type: "single" }
-          : { text: "Button" },
-    };
+  const addBlock = (kind: BlockTypeEnum) => {
+    const id = crypto.randomUUID();
+    let newBlock: TQuizBlock;
+
+    switch (kind) {
+      case BlockTypeEnum.HEADER:
+        newBlock = {
+          id,
+          type: BlockTypeEnum.HEADER,
+          props: { text: "New Heading" },
+        };
+        break;
+
+      case BlockTypeEnum.FOOTER:
+        newBlock = {
+          id,
+          type: BlockTypeEnum.FOOTER,
+          props: { text: "Footer text" },
+        };
+        break;
+
+      case BlockTypeEnum.BUTTON:
+        newBlock = {
+          id,
+          type: BlockTypeEnum.BUTTON,
+          props: { text: "Button" },
+        };
+        break;
+
+      case BlockTypeEnum.QUESTION:
+        newBlock = {
+          id,
+          type: BlockTypeEnum.QUESTION,
+          props: { question: "New Question?", options: [], type: "single" },
+        };
+        break;
+
+      default:
+        return;
+    }
+
     setQuiz((q) => ({ ...q, blocks: [...q.blocks, newBlock] }));
     touch();
   };
@@ -72,7 +101,7 @@ export default function NewQuizPage() {
   };
 
   const handleSave = () => {
-    saveQuiz(quiz);
+    addOrUpdateQuiz(quiz);
     alert("Quiz saved!");
   };
 
@@ -83,7 +112,7 @@ export default function NewQuizPage() {
       updatedAt: new Date().toISOString(),
     };
     setQuiz(updatedQuiz);
-    saveQuiz(updatedQuiz);
+    addOrUpdateQuiz(updatedQuiz);
     alert("Quiz published!");
   };
 

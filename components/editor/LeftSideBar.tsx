@@ -3,7 +3,7 @@
 import { FC } from "react";
 import { blocks } from "./constants";
 import { BlockListItem } from "./components/BlockItem";
-import { BlockTypeEnum } from "@/storage/types";
+import { BlockTypeEnum } from "@/models/quiz";
 
 interface ISidebarLeftProps {
   onAddBlock: (type: BlockTypeEnum) => void;

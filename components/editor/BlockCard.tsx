@@ -3,7 +3,7 @@
 import { FC, CSSProperties } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { TQuizBlock, BlockTypeEnum } from "@/storage/types";
+import { TQuizBlock, BlockTypeEnum } from "@/models/quiz";
 
 interface IBlockCardProps {
   block: TQuizBlock;

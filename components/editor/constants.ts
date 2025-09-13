@@ -1,5 +1,4 @@
-import { IBlockType } from "./types";
-import { BlockTypeEnum } from "@/storage/types";
+import { BlockTypeEnum } from "@/models/quiz";
 
 export const blocks = [
   { type: BlockTypeEnum.HEADER, label: "Heading" },

@@ -1,7 +1,7 @@
 "use client";
 
+import { BlockTypeEnum } from "@/models/quiz";
 import { FC } from "react";
-import { BlockTypeEnum } from "@/storage/types";
 
 interface IBlockListItemProps {
   type: BlockTypeEnum;
